@@ -7,7 +7,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --clock-font-size: 8vw;
+            --clock-font-size: 10vw;
+            --location-font-size: 1.5vw;
             --greeting-font-size: 4vw;
             --container-padding: 20px;
             --container-border-radius: 25px;
@@ -29,12 +30,11 @@
 
         .container {
             text-align: center;
-            margin: 0 auto;
-            padding: 0;
+            margin: 0 auto 20px;
+            padding: var(--container-padding);
             color: white;
             background-color: var(--container-background-color);
             border-radius: var(--container-border-radius);
-            padding: var(--container-padding);
             display: inline-block;
             box-shadow: 0 0 20px rgba(224, 247, 250, 0.1);
         }
@@ -45,35 +45,43 @@
             margin-bottom: 10px;
         }
 
-        .clock {
+        .clock-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 0 auto;
+            max-width: 900px;
+        }
+
+        .time-box {
+            background-color: var(--container-background-color);
+            border-radius: var(--container-border-radius);
+            padding: var(--container-padding);
+            box-shadow: 0 0 20px rgba(224, 247, 250, 0.1);
+            margin: 10px;
+            width: 350px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .time-box .day-date {
+            font-size: calc(var(--clock-font-size) * 0.4);
+            margin-bottom: 5px;
+            font-style: italic;
+        }
+
+        .time-box .time {
             font-size: var(--clock-font-size);
-            font-style: italic;
-        }
-
-        .time {
             font-weight: bold;
-            margin: 5px 0;
-            position: relative;
-            padding-bottom: 15px;
+            margin: 10px 0;
         }
 
-        .location {
-            font-size: 0.6em;
-            font-weight: normal;
-            margin-right: 5px;
-            opacity: 0.9;
-        }
-
-        .full-location {
-            position: absolute;
-            font-size: 0.3em;
-            opacity: 0.7;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            text-align: center;
-            font-weight: normal;
+        .time-box .location {
+            font-size: var(--location-font-size);
             font-style: italic;
+            opacity: 0.8;
         }
 
         .glow {
@@ -89,6 +97,9 @@
             width: 80%;
             max-width: 600px;
             box-shadow: 0 0 20px rgba(224, 247, 250, 0.1);
+        }
+        .time-box .time .ampm {
+            font-size: 0.4em; /* Makes AM/PM 70% the size of the rest of the time */
         }
 
         input[type="text"] {
@@ -192,19 +203,37 @@
         .theme-toggle button {
             margin: 0 5px;
         }
+
+        @media (max-width: 768px) {
+            :root {
+                --clock-font-size: 7vw;
+                --location-font-size: 3vw;
+                --greeting-font-size: 6vw;
+            }
+            
+            .time-box {
+                width: 90%;
+                max-width: 350px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="greeting glow" id="greeting"></div>
-        <div class="clock">
-            <div id="date"></div>
-            <div class="time" id="time">
-                <div class="full-location" id="chennai-full-location">Chennai, Tamil Nadu, India</div>
-            </div>
-            <div class="time" id="cambridge-time">
-                <div class="full-location" id="cambridge-full-location">Cambridge, Massachusetts, United States</div>
-            </div>
+    </div>
+
+    <div class="clock-container">
+        <div class="time-box" id="chennai-box">
+            <div class="day-date" id="chennai-day-date"></div>
+            <div class="time glow" id="chennai-time"></div>
+            <div class="location" id="chennai-location">Chennai, Tamil Nadu, India</div>
+        </div>
+        
+        <div class="time-box" id="cambridge-box">
+            <div class="day-date" id="cambridge-day-date"></div>
+            <div class="time glow" id="cambridge-time"></div>
+            <div class="location" id="cambridge-location">Cambridge, Massachusetts, United States</div>
         </div>
     </div>
 
@@ -329,71 +358,57 @@
         }
 
         function updateTime() {
-            const dateElement = document.getElementById('date');
-            const timeElement = document.getElementById('time');
-            const cambridgeTimeElement = document.getElementById('cambridge-time');
-            const now = new Date();
-
-            // Date formatting
+            // Format days and months arrays
             const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-            const day = days[now.getDay()];
             const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-            const month = monthNames[now.getMonth()];
-            const date = now.getDate();
-            const year = now.getFullYear();
-
-            // Chennai time (IST: UTC+5:30)
-            const chennaiTime = new Date(now);
+            
+            // Get current time
+            const now = new Date();
+            
+            // CHENNAI TIME
+            const chennaiDate = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+            
+            // Extract Chennai date components
+            const chennaiDay = days[chennaiDate.getDay()];
+            const chennaiMonth = monthNames[chennaiDate.getMonth()];
+            const chennaiDateNum = chennaiDate.getDate();
             
             // Format Chennai time
-            let chennaiHours = chennaiTime.getHours();
-            const chennaiMinutes = String(chennaiTime.getMinutes()).padStart(2, '0');
-            const chennaiSeconds = String(chennaiTime.getSeconds()).padStart(2, '0');
+            let chennaiHours = chennaiDate.getHours();
+            const chennaiMinutes = String(chennaiDate.getMinutes()).padStart(2, '0');
+            const chennaiSeconds = String(chennaiDate.getSeconds()).padStart(2, '0');
             const chennaiAmpm = chennaiHours >= 12 ? 'PM' : 'AM';
             chennaiHours = chennaiHours % 12;
             chennaiHours = chennaiHours ? chennaiHours : 12;
-            const chennaiTimeStr = `${chennaiHours}:${chennaiMinutes}:${chennaiSeconds} ${chennaiAmpm}`;
-
-            // Cambridge time (EDT: UTC-4:00 or EST: UTC-5:00)
-            const cambridgeTime = new Date(now);
-            // Calculate time difference between Chennai (IST: UTC+5:30) and Cambridge
-            // Chennai is UTC+5:30, Cambridge is typically UTC-4:00 or UTC-5:00
-            // Total difference is 9:30 or 10:30 hours
             
-            // Get if Cambridge is in DST
-            const isDST = function(d) {
-                const jan = new Date(d.getFullYear(), 0, 1).getTimezoneOffset();
-                const jul = new Date(d.getFullYear(), 6, 1).getTimezoneOffset();
-                return Math.max(jan, jul) !== d.getTimezoneOffset();
-            };
+            // Create Chennai formatted strings
+            const chennaiDayDateStr = `${chennaiDay}, ${chennaiMonth} ${chennaiDateNum}`;
+            const chennaiTimeStr = `${chennaiHours}:${chennaiMinutes}:${chennaiSeconds} <span class="ampm">${chennaiAmpm}</span>`;            
+            // CAMBRIDGE TIME
+            const cambridgeDate = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
             
-            // Determine offset based on DST
-            const cambridgeOffset = isDST(now) ? -4 : -5; // Hours from UTC
-            
-            // Chennai is UTC+5:30, so the difference to UTC is -5.5 hours
-            // To get from Chennai to Cambridge, we need to subtract the total difference
-            const totalHoursDiff = 5.5 + Math.abs(cambridgeOffset); // 9.5 or 10.5 hours
-            
-            // Convert to milliseconds and adjust
-            const hoursDiff = Math.floor(totalHoursDiff);
-            const minutesDiff = (totalHoursDiff - hoursDiff) * 60;
-            
-            cambridgeTime.setHours(cambridgeTime.getHours() - hoursDiff);
-            cambridgeTime.setMinutes(cambridgeTime.getMinutes() - minutesDiff);
+            // Extract Cambridge date components
+            const cambridgeDay = days[cambridgeDate.getDay()];
+            const cambridgeMonth = monthNames[cambridgeDate.getMonth()];
+            const cambridgeDateNum = cambridgeDate.getDate();
             
             // Format Cambridge time
-            let cambridgeHours = cambridgeTime.getHours();
-            const cambridgeMinutes = String(cambridgeTime.getMinutes()).padStart(2, '0');
-            const cambridgeSeconds = String(cambridgeTime.getSeconds()).padStart(2, '0');
+            let cambridgeHours = cambridgeDate.getHours();
+            const cambridgeMinutes = String(cambridgeDate.getMinutes()).padStart(2, '0');
+            const cambridgeSeconds = String(cambridgeDate.getSeconds()).padStart(2, '0');
             const cambridgeAmpm = cambridgeHours >= 12 ? 'PM' : 'AM';
             cambridgeHours = cambridgeHours % 12;
             cambridgeHours = cambridgeHours ? cambridgeHours : 12;
-            const cambridgeTimeStr = `${cambridgeHours}:${cambridgeMinutes}:${cambridgeSeconds} ${cambridgeAmpm}`;
-
+            
+            // Create Cambridge formatted strings
+            const cambridgeDayDateStr = `${cambridgeDay}, ${cambridgeMonth} ${cambridgeDateNum}`;
+            const cambridgeTimeStr = `${cambridgeHours}:${cambridgeMinutes}:${cambridgeSeconds} <span class="ampm">${cambridgeAmpm}</span>`;            
             // Update the HTML elements
-            dateElement.textContent = `${day}, ${month} ${date}, ${year}`;
-            timeElement.innerHTML = `<span class="location"></span> ${chennaiTimeStr}<div class="full-location">Chennai, Tamil Nadu, India</div>`;
-            cambridgeTimeElement.innerHTML = `<span class="location"></span> ${cambridgeTimeStr}<div class="full-location">Cambridge, Massachusetts, United States</div>`;
+            document.getElementById('chennai-day-date').textContent = chennaiDayDateStr;
+            document.getElementById('chennai-time').innerHTML = chennaiTimeStr;
+            
+            document.getElementById('cambridge-day-date').textContent = cambridgeDayDateStr;
+            document.getElementById('cambridge-time').innerHTML = cambridgeTimeStr;
         }
 
         function searchGoogle() {
