@@ -52,6 +52,28 @@
 
         .time {
             font-weight: bold;
+            margin: 5px 0;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .location {
+            font-size: 0.6em;
+            font-weight: normal;
+            margin-right: 5px;
+            opacity: 0.9;
+        }
+
+        .full-location {
+            position: absolute;
+            font-size: 0.3em;
+            opacity: 0.7;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-weight: normal;
+            font-style: normal;
         }
 
         .glow {
@@ -177,7 +199,12 @@
         <div class="greeting glow" id="greeting"></div>
         <div class="clock">
             <div id="date"></div>
-            <div class="time" id="time"></div>
+            <div class="time" id="time">
+                <div class="full-location" id="chennai-full-location">Chennai, Tamil Nadu, India</div>
+            </div>
+            <div class="time" id="cambridge-time">
+                <div class="full-location" id="cambridge-full-location">Cambridge, Massachusetts, United States</div>
+            </div>
         </div>
     </div>
 
@@ -304,25 +331,69 @@
         function updateTime() {
             const dateElement = document.getElementById('date');
             const timeElement = document.getElementById('time');
+            const cambridgeTimeElement = document.getElementById('cambridge-time');
             const now = new Date();
 
+            // Date formatting
             const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
             const day = days[now.getDay()];
             const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
             const month = monthNames[now.getMonth()];
             const date = now.getDate();
             const year = now.getFullYear();
-            let hours = now.getHours();
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const seconds = String(now.getSeconds()).padStart(2, '0');
-            const ampm = hours >= 12 ? 'PM' : 'AM';
 
-            hours = hours % 12;
-            hours = hours ? hours : 12; // The hour '0' should be '12'
-            const strTime = `${hours}:${minutes}:${seconds} ${ampm}`;
+            // Chennai time (IST: UTC+5:30)
+            const chennaiTime = new Date(now);
+            
+            // Format Chennai time
+            let chennaiHours = chennaiTime.getHours();
+            const chennaiMinutes = String(chennaiTime.getMinutes()).padStart(2, '0');
+            const chennaiSeconds = String(chennaiTime.getSeconds()).padStart(2, '0');
+            const chennaiAmpm = chennaiHours >= 12 ? 'PM' : 'AM';
+            chennaiHours = chennaiHours % 12;
+            chennaiHours = chennaiHours ? chennaiHours : 12;
+            const chennaiTimeStr = `${chennaiHours}:${chennaiMinutes}:${chennaiSeconds} ${chennaiAmpm}`;
 
+            // Cambridge time (EDT: UTC-4:00 or EST: UTC-5:00)
+            const cambridgeTime = new Date(now);
+            // Calculate time difference between Chennai (IST: UTC+5:30) and Cambridge
+            // Chennai is UTC+5:30, Cambridge is typically UTC-4:00 or UTC-5:00
+            // Total difference is 9:30 or 10:30 hours
+            
+            // Get if Cambridge is in DST
+            const isDST = function(d) {
+                const jan = new Date(d.getFullYear(), 0, 1).getTimezoneOffset();
+                const jul = new Date(d.getFullYear(), 6, 1).getTimezoneOffset();
+                return Math.max(jan, jul) !== d.getTimezoneOffset();
+            };
+            
+            // Determine offset based on DST
+            const cambridgeOffset = isDST(now) ? -4 : -5; // Hours from UTC
+            
+            // Chennai is UTC+5:30, so the difference to UTC is -5.5 hours
+            // To get from Chennai to Cambridge, we need to subtract the total difference
+            const totalHoursDiff = 5.5 + Math.abs(cambridgeOffset); // 9.5 or 10.5 hours
+            
+            // Convert to milliseconds and adjust
+            const hoursDiff = Math.floor(totalHoursDiff);
+            const minutesDiff = (totalHoursDiff - hoursDiff) * 60;
+            
+            cambridgeTime.setHours(cambridgeTime.getHours() - hoursDiff);
+            cambridgeTime.setMinutes(cambridgeTime.getMinutes() - minutesDiff);
+            
+            // Format Cambridge time
+            let cambridgeHours = cambridgeTime.getHours();
+            const cambridgeMinutes = String(cambridgeTime.getMinutes()).padStart(2, '0');
+            const cambridgeSeconds = String(cambridgeTime.getSeconds()).padStart(2, '0');
+            const cambridgeAmpm = cambridgeHours >= 12 ? 'PM' : 'AM';
+            cambridgeHours = cambridgeHours % 12;
+            cambridgeHours = cambridgeHours ? cambridgeHours : 12;
+            const cambridgeTimeStr = `${cambridgeHours}:${cambridgeMinutes}:${cambridgeSeconds} ${cambridgeAmpm}`;
+
+            // Update the HTML elements
             dateElement.textContent = `${day}, ${month} ${date}, ${year}`;
-            timeElement.textContent = strTime;
+            timeElement.innerHTML = `<span class="location"></span> ${chennaiTimeStr}<div class="full-location">Chennai, Tamil Nadu, India</div>`;
+            cambridgeTimeElement.innerHTML = `<span class="location"></span> ${cambridgeTimeStr}<div class="full-location">Cambridge, Massachusetts, United States</div>`;
         }
 
         function searchGoogle() {
@@ -349,7 +420,8 @@
             let query = document.getElementById('searchQuery').value;
             window.open('https://claude.ai/new?q=' + encodeURIComponent(query));
         }
-(function(d, s, id) {
+
+        (function(d, s, id) {
             if (d.getElementById(id)) {
                 if (window.__TOMORROW__) {
                     window.__TOMORROW__.renderWidget();
