@@ -6,7 +6,7 @@ cd /d "%~dp0"
 
 :: Package Python script to EXE
 pip install pyinstaller
-pyinstaller --onefile --name "SmartAlarm" --clean main_alarm.py
+pyinstaller --onefile --name "SmartAlarm" --clean main.py
 
 :: Create desktop shortcut
 set SCRIPT="%TEMP%\%RANDOM%-%RANDOM%-%RANDOM%-%RANDOM%.vbs"
