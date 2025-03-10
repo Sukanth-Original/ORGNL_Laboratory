@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Combined Page</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --clock-font-size: 8vw;
+            --greeting-font-size: 4vw;
+            --container-padding: 20px;
+            --container-border-radius: 25px;
+            --container-background-color: rgba(0, 0, 0, 0.7);
+            --container-margin-bottom: 20px;
+            --quick-links-margin: 20px;
+            --button-text-color: #0a192f;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: transparent;
+            color: #e0f7fa;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .container {
+            text-align: center;
+            margin: 0 auto;
+            padding: 0;
+            color: white;
+            background-color: var(--container-background-color);
+            border-radius: var(--container-border-radius);
+            padding: var(--container-padding);
+            display: inline-block;
+            box-shadow: 0 0 20px rgba(224, 247, 250, 0.1);
+        }
+
+        .greeting {
+            font-size: var(--greeting-font-size);
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+
+        .clock {
+            font-size: var(--clock-font-size);
+            font-style: italic;
+        }
+
+        .time {
+            font-weight: bold;
+        }
+
+        .glow {
+            text-shadow: 0 0 3px var(--text-shadow-color), 0 0 6px var(--text-shadow-color), 0 0 9px var(--text-shadow-color);
+        }
+
+        .search-container, .quick-links-container, .weather-container {
+            display: inline-block;
+            margin: 10px auto;
+            background: var(--container-background-color);
+            border-radius: var(--container-border-radius);
+            padding: 20px;
+            width: 80%;
+            max-width: 600px;
+            box-shadow: 0 0 20px rgba(224, 247, 250, 0.1);
+        }
+
+        input[type="text"] {
+            padding: 12px;
+            font-size: 18px;
+            border-radius: 10px;
+            border: 2px solid var(--search-bar-border-color);
+            background-color: var(--search-bar-background);
+            color: var(--search-bar-text-color);
+            outline: none;
+            box-shadow: var(--search-bar-box-shadow);
+            animation: pulse 2s infinite;
+            transition: all 0.3s ease;
+            display: block;
+            width: calc(100% - 24px);
+            white-space: nowrap;
+            overflow: hidden;
+            margin: 0 auto;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        input[type="text"]::-webkit-scrollbar {
+            width: 16px;
+        }
+
+        input[type="text"]::-webkit-scrollbar-track {
+            background: rgba(224, 247, 250, 0.2);
+            border-radius: 10px;
+        }
+
+        input[type="text"]::-webkit-scrollbar-thumb {
+            background: rgba(100, 255, 237, 0.7);
+            border-radius: 10px;
+        }
+
+        input[type="text"]::-webkit-scrollbar-thumb:hover {
+            background: rgba(100, 255, 237, 0.9);
+        }
+
+        input[type="text"]::placeholder {
+            color: var(--search-bar-text-color);
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 16px;
+            margin: 10px;
+            border: 2px solid var(--button-border-color);
+            border-radius: 10px;
+            background-color: var(--button-background-color);
+            color: var(--button-text-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Montserrat', sans-serif;
+            box-shadow: 0 0 15px var(--button-shadow-color);
+            max-width: 200px;
+            text-align: center;
+            display: inline-block;
+        }
+
+        button:hover {
+            background-color: var(--button-hover-color);
+            transform: scale(1.1);
+        }
+
+        .quick-links a {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 5px;
+            border: 2px solid var(--button-border-color);
+            border-radius: 10px;
+            background-color: var(--button-background-color);
+            color: var(--button-text-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px var(--button-shadow-color);
+        }
+
+        .quick-links a:hover {
+            background-color: var(--button-hover-color);
+            transform: scale(1.1);
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 10px var(--pulse-color-light);
+            }
+            50% {
+                box-shadow: 0 0 25px var(--pulse-color-dark);
+            }
+            100% {
+                box-shadow: 0 0 10px var(--pulse-color-light);
+            }
+        }
+
+        .theme-toggle {
+            margin-top: 20px;
+        }
+
+        .theme-toggle button {
+            margin: 0 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="greeting glow" id="greeting"></div>
+        <div class="clock">
+            <div id="date"></div>
+            <div class="time" id="time"></div>
+        </div>
+    </div>
+
+    <div class="search-container">
+        <input type="text" id="searchQuery" placeholder="">
+        <br><br>
+        <button onclick="searchGoogle()">Google</button>
+        <button onclick="searchYouTube()">YouTube</button>
+        <button onclick="searchChatGPT()">ChatGPT</button>
+        <button onclick="searchPerplexity()">Perplexity</button>
+        <button onclick="searchClaude()">Claude</button>
+    </div>
+    
+    <div class="quick-links-container">
+        <div class="quick-links">
+            <a href="https://login.microsoftonline.com/common/oauth2/v2.0/authorize?response_type=id_token&scope=openid%20profile&client_id=5e3ce6c0-2b1f-4285-8d4b-75ee78787346&redirect_uri=https%3A%2F%2Fteams.microsoft.com%2Fgo&state=eyJpZCI6ImI3MzFhMWI1LTlkNDEtNGQwZC1hOTNmLTJkNGYwODM2ZjE0NSIsInRzIjoxNjU4NTEwODE0LCJtZXRob2QiOiJyZWRpcmVjdEludGVyYWN0aW9uIn0%3D&nonce=c90b6046-43dd-48fb-8150-32ac84eb7242&client_info=1&x-client-SKU=MSAL.JS&x-client-Ver=1.3.4&client-request-id=2d4dccbc-bd89-4e0b-93eb-ed9604cfb598&response_mode=fragment&sso_reload=true" target="_blank">Teams</a>
+            <a href="https://mail.google.com/mail/u/0/#inbox" target="_blank">Gmail</a>
+            <a href="https://web.whatsapp.com/" target="_blank">WhatsApp</a>
+        </div>
+    </div>
+    
+    <div class="weather-container">
+        <div class="tomorrow"
+           data-location-id="132169"
+           data-language="EN"
+           data-unit-system="METRIC"
+           data-skin="dark"
+           data-widget-type="upcoming"
+           style="padding-bottom:22px;position:relative;"
+        >
+        </div>
+    </div>
+
+    <div class="theme-toggle">
+        <button onclick="setTheme('cyan')">Cyan</button>
+        <button onclick="setTheme('neon-red')">Neon Red</button>
+        <button onclick="setTheme('teal')">Teal</button>
+        <button onclick="setTheme('gold-neon')">Gold Neon</button>
+    </div>
+
+    <script>
+        const themes = {
+            'cyan': {
+                '--button-background-color': '#64ffed',
+                '--button-border-color': '#64ffed',
+                '--button-hover-color': '#4cffed',
+                '--text-shadow-color': '#64ffed',
+                '--search-bar-background': 'rgba(100, 255, 237, 0.3)',
+                '--search-bar-border-color': '#64ffed',
+                '--search-bar-box-shadow': '0 0 20px rgba(100, 255, 237, 0.6)',
+                '--search-bar-text-color': '#64ffed',
+                '--button-shadow-color': 'rgba(100, 255, 237, 0.5)',
+                '--pulse-color-light': 'rgba(100, 255, 237, 0.5)',
+                '--pulse-color-dark': 'rgba(100, 255, 237, 1)'
+            },
+            'neon-red': {
+                '--button-background-color': '#ff3131',
+                '--button-border-color': '#ff3131',
+                '--button-hover-color': '#ff4f4f',
+                '--text-shadow-color': '#ff3131',
+                '--search-bar-background': 'rgba(255, 49, 49, 0.3)',
+                '--search-bar-border-color': '#ff3131',
+                '--search-bar-box-shadow': '0 0 20px rgba(255, 49, 49, 0.6)',
+                '--search-bar-text-color': '#ff3131',
+                '--button-shadow-color': 'rgba(255, 49, 49, 0.5)',
+                '--pulse-color-light': 'rgba(255, 49, 49, 0.5)',
+                '--pulse-color-dark': 'rgba(255, 49, 49, 1)'
+            },
+            'teal': {
+                '--button-background-color': '#64ffda',
+                '--button-border-color': '#64ffda',
+                '--button-hover-color': '#4cffb5',
+                '--text-shadow-color': '#64ffda',
+                '--search-bar-background': 'rgba(100, 255, 218, 0.3)',
+                '--search-bar-border-color': '#64ffda',
+                '--search-bar-box-shadow': '0 0 20px rgba(100, 255, 218, 0.6)',
+                '--search-bar-text-color': '#64ffda',
+                '--button-shadow-color': 'rgba(100, 255, 218, 0.5)',
+                '--pulse-color-light': 'rgba(100, 255, 218, 0.5)',
+                '--pulse-color-dark': 'rgba(100, 255, 218, 1)'
+            },
+            'gold-neon': {
+                '--button-background-color': '#f7ef8a',
+                '--button-border-color': '#f7ef8a',
+                '--button-hover-color': '#705832',
+                '--text-shadow-color': '#f7ef8a',
+                '--search-bar-background': 'rgba(204, 181, 149, 0.3)',
+                '--search-bar-border-color': '#f7ef8a',
+                '--search-bar-box-shadow': '0 0 20px rgba(204, 181, 149, 0.6)',
+                '--search-bar-text-color': '#f7ef8a',
+                '--button-shadow-color': 'rgba(204, 181, 149, 0.5)',
+                '--pulse-color-light': 'rgba(204, 181, 149, 0.5)',
+                '--pulse-color-dark': 'rgba(204, 181, 149, 1)'
+            }
+        };
+
+        function setTheme(themeName) {
+            const theme = themes[themeName];
+            for (const [property, value] of Object.entries(theme)) {
+                document.documentElement.style.setProperty(property, value);
+            }
+        }
+
+        function updateGreeting() {
+            const greetingElement = document.getElementById('greeting');
+            const now = new Date();
+            const hours = now.getHours();
+            const name = "Sukanth";
+
+            let greeting;
+            if (hours < 12) {
+                greeting = `<span class="glow">Good Morning</span><span class="glow">, ${name}!</span>`;
+            } else if (hours < 17) {
+                greeting = `<span class="glow">Good Afternoon</span><span class="glow">, ${name}!</span>`;
+            } else if (hours < 21) {
+                greeting = `<span class="glow">Good Evening</span><span class="glow">, ${name}!</span>`;
+            } else {
+                greeting = `<span class="glow">Good Late Night</span><span class="glow">, ${name}!</span>`;
+            }
+
+            greetingElement.innerHTML = greeting;
+        }
+
+        function updateTime() {
+            const dateElement = document.getElementById('date');
+            const timeElement = document.getElementById('time');
+            const now = new Date();
+
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const day = days[now.getDay()];
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const month = monthNames[now.getMonth()];
+            const date = now.getDate();
+            const year = now.getFullYear();
+            let hours = now.getHours();
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+
+            hours = hours % 12;
+            hours = hours ? hours : 12; // The hour '0' should be '12'
+            const strTime = `${hours}:${minutes}:${seconds} ${ampm}`;
+
+            dateElement.textContent = `${day}, ${month} ${date}, ${year}`;
+            timeElement.textContent = strTime;
+        }
+
+        function searchGoogle() {
+            let query = document.getElementById('searchQuery').value;
+            window.open('https://www.google.com/search?q=' + encodeURIComponent(query));
+        }
+
+        function searchYouTube() {
+            let query = document.getElementById('searchQuery').value;
+            window.open('https://www.youtube.com/results?search_query=' + encodeURIComponent(query));
+        }
+
+        function searchChatGPT() {
+            let query = document.getElementById('searchQuery').value;
+            window.open('https://chat.openai.com/?model=gpt-4&q=' + encodeURIComponent(query));
+        }
+
+        function searchPerplexity() {
+            let query = document.getElementById('searchQuery').value;
+            window.open('https://www.perplexity.ai/search?q=' + encodeURIComponent(query));
+        }
+
+        function searchClaude() {
+            let query = document.getElementById('searchQuery').value;
+            window.open('https://claude.ai/new?q=' + encodeURIComponent(query));
+        }
+(function(d, s, id) {
+            if (d.getElementById(id)) {
+                if (window.__TOMORROW__) {
+                    window.__TOMORROW__.renderWidget();
+                }
+                return;
+            }
+            const fjs = d.getElementsByTagName(s)[0];
+            const js = d.createElement(s);
+            js.id = id;
+            js.src = "https://www.tomorrow.io/v1/widget/sdk/sdk.bundle.min.js";
+
+            fjs.parentNode.insertBefore(js, fjs);
+        })(document, 'script', 'tomorrow-sdk');
+
+        // Set initial theme
+        setTheme('gold-neon');
+
+        updateGreeting(); // Set the initial greeting
+        setInterval(updateGreeting, 60000); // Update greeting every minute
+        setInterval(updateTime, 1000); // Update time every second
+        updateTime(); // Set the initial time
+    </script>
+</body>
+</html>
